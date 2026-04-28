@@ -14,16 +14,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      allergies: {
+        Row: {
+          created_at: string
+          emergency_action: string | null
+          id: string
+          is_custom: boolean
+          name: string
+          severity: Database["public"]["Enums"]["allergy_severity"]
+          student_id: string
+          symptoms: string | null
+        }
+        Insert: {
+          created_at?: string
+          emergency_action?: string | null
+          id?: string
+          is_custom?: boolean
+          name: string
+          severity?: Database["public"]["Enums"]["allergy_severity"]
+          student_id: string
+          symptoms?: string | null
+        }
+        Update: {
+          created_at?: string
+          emergency_action?: string | null
+          id?: string
+          is_custom?: boolean
+          name?: string
+          severity?: Database["public"]["Enums"]["allergy_severity"]
+          student_id?: string
+          symptoms?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "allergies_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guardians: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          relationship: string
+          student_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          relationship: string
+          student_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          relationship?: string
+          student_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guardians_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          birth_date: string
+          class_name: string
+          created_at: string
+          created_by: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          shift: Database["public"]["Enums"]["student_shift"]
+          updated_at: string
+        }
+        Insert: {
+          birth_date: string
+          class_name: string
+          created_at?: string
+          created_by?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          shift: Database["public"]["Enums"]["student_shift"]
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string
+          class_name?: string
+          created_at?: string
+          created_by?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          shift?: Database["public"]["Enums"]["student_shift"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      allergy_severity: "leve" | "moderado" | "grave"
+      app_role: "admin" | "user"
+      student_shift: "matutino" | "vespertino" | "noturno" | "integral"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +317,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      allergy_severity: ["leve", "moderado", "grave"],
+      app_role: ["admin", "user"],
+      student_shift: ["matutino", "vespertino", "noturno", "integral"],
+    },
   },
 } as const
