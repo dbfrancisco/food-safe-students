@@ -10,12 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RelatorioRouteImport } from './routes/relatorio'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlunosIndexRouteImport } from './routes/alunos.index'
+import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
+import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatorioRoute = RelatorioRouteImport.update({
+  id: '/relatorio',
+  path: '/relatorio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -23,40 +33,105 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlunosIndexRoute = AlunosIndexRouteImport.update({
+  id: '/alunos/',
+  path: '/alunos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlunosNovoRoute = AlunosNovoRouteImport.update({
+  id: '/alunos/novo',
+  path: '/alunos/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlunosIdRoute = AlunosIdRouteImport.update({
+  id: '/alunos/$id',
+  path: '/alunos/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/relatorio': typeof RelatorioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/alunos/$id': typeof AlunosIdRoute
+  '/alunos/novo': typeof AlunosNovoRoute
+  '/alunos/': typeof AlunosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/relatorio': typeof RelatorioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/alunos/$id': typeof AlunosIdRoute
+  '/alunos/novo': typeof AlunosNovoRoute
+  '/alunos': typeof AlunosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/relatorio': typeof RelatorioRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/alunos/$id': typeof AlunosIdRoute
+  '/alunos/novo': typeof AlunosNovoRoute
+  '/alunos/': typeof AlunosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/reset-password'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/relatorio'
+    | '/reset-password'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/reset-password'
-  id: '__root__' | '/' | '/login' | '/reset-password'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/relatorio'
+    | '/reset-password'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/relatorio'
+    | '/reset-password'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  RelatorioRoute: typeof RelatorioRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  AlunosIdRoute: typeof AlunosIdRoute
+  AlunosNovoRoute: typeof AlunosNovoRoute
+  AlunosIndexRoute: typeof AlunosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,11 +143,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relatorio': {
+      id: '/relatorio'
+      path: '/relatorio'
+      fullPath: '/relatorio'
+      preLoaderRoute: typeof RelatorioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,14 +171,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alunos/': {
+      id: '/alunos/'
+      path: '/alunos'
+      fullPath: '/alunos/'
+      preLoaderRoute: typeof AlunosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alunos/novo': {
+      id: '/alunos/novo'
+      path: '/alunos/novo'
+      fullPath: '/alunos/novo'
+      preLoaderRoute: typeof AlunosNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alunos/$id': {
+      id: '/alunos/$id'
+      path: '/alunos/$id'
+      fullPath: '/alunos/$id'
+      preLoaderRoute: typeof AlunosIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  RelatorioRoute: RelatorioRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  AlunosIdRoute: AlunosIdRoute,
+  AlunosNovoRoute: AlunosNovoRoute,
+  AlunosIndexRoute: AlunosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
