@@ -150,7 +150,8 @@ function StudentsList() {
               )}
             </div>
           ) : (
-            <table className="w-full text-left">
+            <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[640px]">
               <thead className="bg-muted/30">
                 <tr className="border-b border-border">
                   <th className="px-4 py-3 medical-label">Aluno</th>
@@ -223,6 +224,7 @@ function StudentsList() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
