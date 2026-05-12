@@ -188,7 +188,7 @@ function StudentDetail() {
               )}
             </div>
             {editing ? (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Nome">
                   <input className="form-input" value={editForm.full_name ?? ""} onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })} />
                 </Field>
@@ -213,7 +213,7 @@ function StudentDetail() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <Info label="Nome Completo" value={student.full_name} />
                 <Info label="Data de Nascimento" value={new Date(student.birth_date).toLocaleDateString("pt-BR")} />
                 <Info label="Turma / Série" value={student.class_name} />
@@ -240,7 +240,7 @@ function StudentDetail() {
 
             {showAllergyForm && (
               <div className="border border-border p-4 mb-4 space-y-3 bg-muted/20">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Tipo de Alergia *">
                     <select
                       className="form-input"

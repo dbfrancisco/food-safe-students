@@ -170,7 +170,7 @@ function ReportPage() {
         </div>
       </div>
 
-      <div className="bg-card clinical-border p-8 print:p-0 print:border-0">
+      <div className="bg-card clinical-border p-4 md:p-8 print:p-0 print:border-0">
         <div className="border-b border-border pb-4 mb-6">
           <div className="flex justify-between items-end">
             <div>
@@ -196,7 +196,8 @@ function ReportPage() {
             </p>
           </div>
         ) : (
-          <table className="w-full text-left text-sm border-collapse">
+          <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse min-w-[720px]">
             <thead>
               <tr className="border-b-2 border-foreground">
                 <th className="px-2 py-2 medical-label">Aluno</th>
@@ -247,9 +248,10 @@ function ReportPage() {
               })}
             </tbody>
           </table>
+          </div>
         )}
 
-        <div className="mt-6 pt-4 border-t border-border text-[10px] text-muted-foreground italic flex justify-between">
+        <div className="mt-6 pt-4 border-t border-border text-[10px] text-muted-foreground italic flex flex-wrap gap-2 justify-between">
           <span>Documento confidencial — uso interno escolar</span>
           <span>DietaSafe v1.0</span>
         </div>
