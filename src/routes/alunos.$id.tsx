@@ -7,7 +7,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save, Pencil, X } from "lucide-react";
 
 export const Route = createFileRoute("/alunos/$id")({
   component: () => (
@@ -54,6 +54,40 @@ function StudentDetail() {
     name: "", custom: "", severity: "leve" as Severity,
     symptoms: "", emergency_action: "",
   });
+  const [editingAllergyId, setEditingAllergyId] = useState<string | null>(null);
+  const [editAllergyForm, setEditAllergyForm] = useState<{ name: string; severity: Severity; symptoms: string; emergency_action: string }>({
+    name: "", severity: "leve", symptoms: "", emergency_action: "",
+  });
+
+  function startEditAllergy(a: Allergy) {
+    setEditingAllergyId(a.id);
+    setEditAllergyForm({
+      name: a.name,
+      severity: a.severity,
+      symptoms: a.symptoms ?? "",
+      emergency_action: a.emergency_action ?? "",
+    });
+  }
+
+  async function saveEditAllergy(allergyId: string) {
+    const parsed = allergySchema.safeParse(editAllergyForm);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    const { error } = await supabase.from("allergies").update({
+      name: parsed.data.name,
+      severity: parsed.data.severity,
+      symptoms: parsed.data.symptoms || null,
+      emergency_action: parsed.data.emergency_action || null,
+    }).eq("id", allergyId);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Restrição atualizada");
+      setEditingAllergyId(null);
+      load();
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -314,31 +348,92 @@ function StudentDetail() {
               <div className="space-y-3">
                 {allergies.map(a => (
                   <div key={a.id} className="border border-border p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="font-bold flex items-center gap-2">
-                          {a.name}
-                          {a.is_custom && <span className="text-[9px] medical-label opacity-50">PERSONALIZADA</span>}
+                    {editingAllergyId === a.id ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <Field label="Nome *">
+                            <input
+                              className="form-input"
+                              value={editAllergyForm.name}
+                              onChange={(e) => setEditAllergyForm({ ...editAllergyForm, name: e.target.value })}
+                              maxLength={80}
+                            />
+                          </Field>
+                          <Field label="Gravidade *">
+                            <select
+                              className="form-input"
+                              value={editAllergyForm.severity}
+                              onChange={(e) => setEditAllergyForm({ ...editAllergyForm, severity: e.target.value as Severity })}
+                            >
+                              <option value="leve">Leve</option>
+                              <option value="moderado">Moderado</option>
+                              <option value="grave">Grave</option>
+                            </select>
+                          </Field>
+                          <div className="col-span-2">
+                            <Field label="Sintomas">
+                              <textarea
+                                className="form-input"
+                                rows={2}
+                                value={editAllergyForm.symptoms}
+                                onChange={(e) => setEditAllergyForm({ ...editAllergyForm, symptoms: e.target.value })}
+                                maxLength={500}
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-span-2">
+                            <Field label="Ação de Emergência">
+                              <textarea
+                                className="form-input"
+                                rows={2}
+                                value={editAllergyForm.emergency_action}
+                                onChange={(e) => setEditAllergyForm({ ...editAllergyForm, emergency_action: e.target.value })}
+                                maxLength={500}
+                              />
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => saveEditAllergy(a.id)} className="bg-foreground text-background px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                            <Save className="size-3" /> Salvar
+                          </button>
+                          <button onClick={() => setEditingAllergyId(null)} className="border border-border px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                            <X className="size-3" /> Cancelar
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <SeverityBadge level={a.severity} />
-                        <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    </div>
-                    {a.symptoms && (
-                      <div className="text-sm mt-2">
-                        <span className="medical-label">Sintomas: </span>
-                        <span className="text-muted-foreground">{a.symptoms}</span>
-                      </div>
-                    )}
-                    {a.emergency_action && (
-                      <div className="text-sm mt-1">
-                        <span className="medical-label text-destructive">Ação Emergência: </span>
-                        <span>{a.emergency_action}</span>
-                      </div>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="font-bold flex items-center gap-2">
+                              {a.name}
+                              {a.is_custom && <span className="text-[9px] medical-label opacity-50">PERSONALIZADA</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <SeverityBadge level={a.severity} />
+                            <button onClick={() => startEditAllergy(a)} className="text-muted-foreground hover:text-foreground" title="Editar">
+                              <Pencil className="size-4" />
+                            </button>
+                            <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
+                              <Trash2 className="size-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {a.symptoms && (
+                          <div className="text-sm mt-2">
+                            <span className="medical-label">Sintomas: </span>
+                            <span className="text-muted-foreground">{a.symptoms}</span>
+                          </div>
+                        )}
+                        {a.emergency_action && (
+                          <div className="text-sm mt-1">
+                            <span className="medical-label text-destructive">Ação Emergência: </span>
+                            <span>{a.emergency_action}</span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 ))}
