@@ -174,7 +174,6 @@ function StudentDetail() {
   }
 
   async function deleteStudent() {
-    if (!confirm("Excluir aluno permanentemente?")) return;
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
