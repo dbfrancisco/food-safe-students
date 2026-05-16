@@ -7,7 +7,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save, Pencil, X } from "lucide-react";
 
 export const Route = createFileRoute("/alunos/$id")({
   component: () => (
