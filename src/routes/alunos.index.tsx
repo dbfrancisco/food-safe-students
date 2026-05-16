@@ -56,8 +56,7 @@ function StudentsList() {
 
   useEffect(() => { load(); }, []);
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Excluir o aluno ${name}? Todas as restrições e responsáveis também serão removidos.`)) return;
+  async function handleDelete(id: string) {
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
