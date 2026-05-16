@@ -222,7 +222,7 @@ function StudentsList() {
                           Prontuário
                         </Link>
                         <button
-                          onClick={() => handleDelete(s.id, s.full_name)}
+                          onClick={() => setDeleteTarget({ id: s.id, name: s.full_name })}
                           className="text-muted-foreground hover:text-destructive"
                           title="Excluir"
                         >
