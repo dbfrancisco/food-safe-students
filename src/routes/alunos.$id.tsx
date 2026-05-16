@@ -54,6 +54,40 @@ function StudentDetail() {
     name: "", custom: "", severity: "leve" as Severity,
     symptoms: "", emergency_action: "",
   });
+  const [editingAllergyId, setEditingAllergyId] = useState<string | null>(null);
+  const [editAllergyForm, setEditAllergyForm] = useState<{ name: string; severity: Severity; symptoms: string; emergency_action: string }>({
+    name: "", severity: "leve", symptoms: "", emergency_action: "",
+  });
+
+  function startEditAllergy(a: Allergy) {
+    setEditingAllergyId(a.id);
+    setEditAllergyForm({
+      name: a.name,
+      severity: a.severity,
+      symptoms: a.symptoms ?? "",
+      emergency_action: a.emergency_action ?? "",
+    });
+  }
+
+  async function saveEditAllergy(allergyId: string) {
+    const parsed = allergySchema.safeParse(editAllergyForm);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    const { error } = await supabase.from("allergies").update({
+      name: parsed.data.name,
+      severity: parsed.data.severity,
+      symptoms: parsed.data.symptoms || null,
+      emergency_action: parsed.data.emergency_action || null,
+    }).eq("id", allergyId);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Restrição atualizada");
+      setEditingAllergyId(null);
+      load();
+    }
+  }
 
   async function load() {
     setLoading(true);
