@@ -203,7 +203,7 @@ function StudentDetail() {
             <ArrowLeft className="size-3" /> Lista
           </Link>
           <button
-            onClick={deleteStudent}
+            onClick={() => setConfirmStudentDelete(true)}
             className="px-4 py-2 text-xs font-bold uppercase tracking-widest border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground flex items-center gap-2"
           >
             <Trash2 className="size-3" /> Excluir
