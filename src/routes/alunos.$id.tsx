@@ -426,7 +426,7 @@ function StudentDetail() {
                             <button onClick={() => startEditAllergy(a)} className="text-muted-foreground hover:text-foreground" title="Editar">
                               <Pencil className="size-4" />
                             </button>
-                            <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
+                            <button onClick={() => setAllergyToDelete(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
                               <Trash2 className="size-4" />
                             </button>
                           </div>
