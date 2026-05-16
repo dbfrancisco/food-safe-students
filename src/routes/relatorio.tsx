@@ -5,7 +5,8 @@ import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
-import { Printer, Download } from "lucide-react";
+import { Printer, Download, ArrowLeft } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
@@ -167,6 +168,14 @@ function ReportPage() {
             <option value="moderado">Moderado</option>
             <option value="leve">Leve</option>
           </select>
+        </div>
+        <div className="flex items-end">
+          <Link
+            to="/alunos"
+            className="px-4 py-2 text-xs font-bold uppercase tracking-widest border border-foreground hover:bg-foreground hover:text-background flex items-center gap-2"
+          >
+            <ArrowLeft className="size-3" /> Voltar
+          </Link>
         </div>
       </div>
 
