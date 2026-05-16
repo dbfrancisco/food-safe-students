@@ -348,31 +348,92 @@ function StudentDetail() {
               <div className="space-y-3">
                 {allergies.map(a => (
                   <div key={a.id} className="border border-border p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="font-bold flex items-center gap-2">
-                          {a.name}
-                          {a.is_custom && <span className="text-[9px] medical-label opacity-50">PERSONALIZADA</span>}
+                    {editingAllergyId === a.id ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <Field label="Nome *">
+                            <input
+                              className="form-input"
+                              value={editAllergyForm.name}
+                              onChange={(e) => setEditAllergyForm({ ...editAllergyForm, name: e.target.value })}
+                              maxLength={80}
+                            />
+                          </Field>
+                          <Field label="Gravidade *">
+                            <select
+                              className="form-input"
+                              value={editAllergyForm.severity}
+                              onChange={(e) => setEditAllergyForm({ ...editAllergyForm, severity: e.target.value as Severity })}
+                            >
+                              <option value="leve">Leve</option>
+                              <option value="moderado">Moderado</option>
+                              <option value="grave">Grave</option>
+                            </select>
+                          </Field>
+                          <div className="col-span-2">
+                            <Field label="Sintomas">
+                              <textarea
+                                className="form-input"
+                                rows={2}
+                                value={editAllergyForm.symptoms}
+                                onChange={(e) => setEditAllergyForm({ ...editAllergyForm, symptoms: e.target.value })}
+                                maxLength={500}
+                              />
+                            </Field>
+                          </div>
+                          <div className="col-span-2">
+                            <Field label="Ação de Emergência">
+                              <textarea
+                                className="form-input"
+                                rows={2}
+                                value={editAllergyForm.emergency_action}
+                                onChange={(e) => setEditAllergyForm({ ...editAllergyForm, emergency_action: e.target.value })}
+                                maxLength={500}
+                              />
+                            </Field>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => saveEditAllergy(a.id)} className="bg-foreground text-background px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                            <Save className="size-3" /> Salvar
+                          </button>
+                          <button onClick={() => setEditingAllergyId(null)} className="border border-border px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                            <X className="size-3" /> Cancelar
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <SeverityBadge level={a.severity} />
-                        <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    </div>
-                    {a.symptoms && (
-                      <div className="text-sm mt-2">
-                        <span className="medical-label">Sintomas: </span>
-                        <span className="text-muted-foreground">{a.symptoms}</span>
-                      </div>
-                    )}
-                    {a.emergency_action && (
-                      <div className="text-sm mt-1">
-                        <span className="medical-label text-destructive">Ação Emergência: </span>
-                        <span>{a.emergency_action}</span>
-                      </div>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="font-bold flex items-center gap-2">
+                              {a.name}
+                              {a.is_custom && <span className="text-[9px] medical-label opacity-50">PERSONALIZADA</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <SeverityBadge level={a.severity} />
+                            <button onClick={() => startEditAllergy(a)} className="text-muted-foreground hover:text-foreground" title="Editar">
+                              <Pencil className="size-4" />
+                            </button>
+                            <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
+                              <Trash2 className="size-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {a.symptoms && (
+                          <div className="text-sm mt-2">
+                            <span className="medical-label">Sintomas: </span>
+                            <span className="text-muted-foreground">{a.symptoms}</span>
+                          </div>
+                        )}
+                        {a.emergency_action && (
+                          <div className="text-sm mt-1">
+                            <span className="medical-label text-destructive">Ação Emergência: </span>
+                            <span>{a.emergency_action}</span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 ))}
