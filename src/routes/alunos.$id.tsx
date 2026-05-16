@@ -168,7 +168,6 @@ function StudentDetail() {
   }
 
   async function deleteAllergy(allergyId: string) {
-    if (!confirm("Remover esta restrição?")) return;
     const { error } = await supabase.from("allergies").delete().eq("id", allergyId);
     if (error) toast.error(error.message);
     else { toast.success("Removida"); load(); }
