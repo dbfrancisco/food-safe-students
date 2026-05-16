@@ -68,6 +68,8 @@ function StudentDetail() {
   const [editAllergyForm, setEditAllergyForm] = useState<{ name: string; severity: Severity; symptoms: string; emergency_action: string }>({
     name: "", severity: "leve", symptoms: "", emergency_action: "",
   });
+  const [allergyToDelete, setAllergyToDelete] = useState<string | null>(null);
+  const [confirmStudentDelete, setConfirmStudentDelete] = useState(false);
 
   function startEditAllergy(a: Allergy) {
     setEditingAllergyId(a.id);
