@@ -8,6 +8,16 @@ import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save, Pencil, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/alunos/$id")({
   component: () => (
@@ -58,6 +68,8 @@ function StudentDetail() {
   const [editAllergyForm, setEditAllergyForm] = useState<{ name: string; severity: Severity; symptoms: string; emergency_action: string }>({
     name: "", severity: "leve", symptoms: "", emergency_action: "",
   });
+  const [allergyToDelete, setAllergyToDelete] = useState<string | null>(null);
+  const [confirmStudentDelete, setConfirmStudentDelete] = useState(false);
 
   function startEditAllergy(a: Allergy) {
     setEditingAllergyId(a.id);
@@ -156,14 +168,12 @@ function StudentDetail() {
   }
 
   async function deleteAllergy(allergyId: string) {
-    if (!confirm("Remover esta restrição?")) return;
     const { error } = await supabase.from("allergies").delete().eq("id", allergyId);
     if (error) toast.error(error.message);
     else { toast.success("Removida"); load(); }
   }
 
   async function deleteStudent() {
-    if (!confirm("Excluir aluno permanentemente?")) return;
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
@@ -193,7 +203,7 @@ function StudentDetail() {
             <ArrowLeft className="size-3" /> Lista
           </Link>
           <button
-            onClick={deleteStudent}
+            onClick={() => setConfirmStudentDelete(true)}
             className="px-4 py-2 text-xs font-bold uppercase tracking-widest border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground flex items-center gap-2"
           >
             <Trash2 className="size-3" /> Excluir
@@ -416,7 +426,7 @@ function StudentDetail() {
                             <button onClick={() => startEditAllergy(a)} className="text-muted-foreground hover:text-foreground" title="Editar">
                               <Pencil className="size-4" />
                             </button>
-                            <button onClick={() => deleteAllergy(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
+                            <button onClick={() => setAllergyToDelete(a.id)} className="text-muted-foreground hover:text-destructive" title="Excluir">
                               <Trash2 className="size-4" />
                             </button>
                           </div>
@@ -485,6 +495,52 @@ function StudentDetail() {
           box-shadow: 0 0 0 1px var(--color-foreground);
         }
       `}</style>
+
+      <AlertDialog open={!!allergyToDelete} onOpenChange={(o) => !o && setAllergyToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover restrição</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover esta restrição alimentar? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (allergyToDelete) deleteAllergy(allergyToDelete);
+                setAllergyToDelete(null);
+              }}
+            >
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={confirmStudentDelete} onOpenChange={setConfirmStudentDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir aluno</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{student.full_name}</strong> permanentemente? Todas as restrições e responsáveis também serão removidos. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                setConfirmStudentDelete(false);
+                deleteStudent();
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppShell>
   );
 }

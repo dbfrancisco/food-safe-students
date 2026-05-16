@@ -7,6 +7,16 @@ import { Plus, FileText, Search, Trash2 } from "lucide-react";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/alunos/")({
   component: () => (
@@ -31,6 +41,7 @@ function StudentsList() {
   const [classFilter, setClassFilter] = useState("");
   const [shiftFilter, setShiftFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   async function load() {
     setLoading(true);
@@ -45,8 +56,7 @@ function StudentsList() {
 
   useEffect(() => { load(); }, []);
 
-  async function handleDelete(id: string, name: string) {
-    if (!confirm(`Excluir o aluno ${name}? Todas as restrições e responsáveis também serão removidos.`)) return;
+  async function handleDelete(id: string) {
     const { error } = await supabase.from("students").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
@@ -212,7 +222,7 @@ function StudentsList() {
                           Prontuário
                         </Link>
                         <button
-                          onClick={() => handleDelete(s.id, s.full_name)}
+                          onClick={() => setDeleteTarget({ id: s.id, name: s.full_name })}
                           className="text-muted-foreground hover:text-destructive"
                           title="Excluir"
                         >
@@ -228,6 +238,29 @@ function StudentsList() {
           )}
         </div>
       </div>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir aluno</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Todas as restrições e responsáveis também serão removidos. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteTarget) handleDelete(deleteTarget.id);
+                setDeleteTarget(null);
+              }}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppShell>
   );
 }
