@@ -41,6 +41,7 @@ function StudentsList() {
   const [classFilter, setClassFilter] = useState("");
   const [shiftFilter, setShiftFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   async function load() {
     setLoading(true);
