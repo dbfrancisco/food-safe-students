@@ -186,6 +186,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      owns_student: { Args: { _student_id: string }; Returns: boolean }
     }
     Enums: {
       allergy_severity: "leve" | "moderado" | "grave"
