@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ResumoAlimentarRouteImport } from './routes/resumo-alimentar'
 import { Route as RelatorioRouteImport } from './routes/relatorio'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -21,6 +22,11 @@ import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResumoAlimentarRoute = ResumoAlimentarRouteImport.update({
+  id: '/resumo-alimentar',
+  path: '/resumo-alimentar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RelatorioRoute = RelatorioRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/relatorio': typeof RelatorioRoute
+  '/resumo-alimentar': typeof ResumoAlimentarRoute
   '/reset-password': typeof ResetPasswordRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/relatorio': typeof RelatorioRoute
+  '/resumo-alimentar': typeof ResumoAlimentarRoute
   '/reset-password': typeof ResetPasswordRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/relatorio': typeof RelatorioRoute
+  '/resumo-alimentar': typeof ResumoAlimentarRoute
   '/reset-password': typeof ResetPasswordRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/relatorio'
+    | '/resumo-alimentar'
     | '/reset-password'
     | '/alunos/$id'
     | '/alunos/novo'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/relatorio'
+    | '/resumo-alimentar'
     | '/reset-password'
     | '/alunos/$id'
     | '/alunos/novo'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/relatorio'
+    | '/resumo-alimentar'
     | '/reset-password'
     | '/alunos/$id'
     | '/alunos/novo'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   RelatorioRoute: typeof RelatorioRoute
+  ResumoAlimentarRoute: typeof ResumoAlimentarRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   AlunosIdRoute: typeof AlunosIdRoute
   AlunosNovoRoute: typeof AlunosNovoRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resumo-alimentar': {
+      id: '/resumo-alimentar'
+      path: '/resumo-alimentar'
+      fullPath: '/resumo-alimentar'
+      preLoaderRoute: typeof ResumoAlimentarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/relatorio': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   RelatorioRoute: RelatorioRoute,
+  ResumoAlimentarRoute: ResumoAlimentarRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   AlunosIdRoute: AlunosIdRoute,
   AlunosNovoRoute: AlunosNovoRoute,
