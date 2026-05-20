@@ -200,7 +200,7 @@ function StudentDetail() {
       actions={
         <>
           <Link to="/alunos" className="px-4 py-2 text-xs font-bold uppercase tracking-widest border border-border hover:bg-muted flex items-center gap-2">
-            <ArrowLeft className="size-3" /> Lista
+            <ArrowLeft className="size-3" /> Voltar
           </Link>
           <button
             onClick={() => setConfirmStudentDelete(true)}

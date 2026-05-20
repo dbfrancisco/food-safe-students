@@ -1,11 +1,12 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, FileText, LogOut, ShieldPlus, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, FileText, LogOut, ShieldPlus, Menu, X, Utensils } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useState, type ReactNode } from "react";
 
 const nav = [
   { to: "/dashboard", label: "Painel Central", icon: LayoutDashboard },
   { to: "/alunos", label: "Alunos & Restrições", icon: Users },
+  { to: "/resumo-alimentar", label: "Resumo Alimentar Escolar", icon: Utensils },
   { to: "/relatorio", label: "Relatórios", icon: FileText },
 ];
 
