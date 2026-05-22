@@ -9,6 +9,11 @@ import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save, Pencil, X } from "lucide-react";
 import {
+  GRADES, CLASS_LETTERS, RELATIONSHIPS,
+  composeClassName, decomposeClassName,
+  phoneSchema, formatPhone,
+} from "@/lib/school-constants";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
