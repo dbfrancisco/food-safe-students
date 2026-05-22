@@ -539,16 +539,76 @@ function StudentDetail() {
 
         <aside className="space-y-6">
           <section className="bg-card clinical-border p-6">
-            <div className="medical-label mb-1">Contatos</div>
-            <h2 className="font-bold text-lg mb-4">Responsáveis ({guardians.length})</h2>
-            {guardians.length === 0 ? (
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <div className="medical-label mb-1">Contatos</div>
+                <h2 className="font-bold text-lg">Responsáveis ({guardians.length})</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowNewGuardian(true);
+                  setEditingGuardianId(null);
+                  setGuardianForm({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+                }}
+                className="text-xs font-bold uppercase tracking-widest border border-foreground px-2 py-1 hover:bg-foreground hover:text-background flex items-center gap-1"
+              >
+                <Plus className="size-3" /> Novo
+              </button>
+            </div>
+
+            {(showNewGuardian || editingGuardianId) && (
+              <div className="border border-border p-4 mb-4 space-y-3 bg-muted/20">
+                <div className="medical-label">{editingGuardianId ? "Editar responsável" : "Novo responsável"}</div>
+                <Field label="Nome *">
+                  <input className="form-input" value={guardianForm.full_name} maxLength={120}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, full_name: e.target.value })} />
+                </Field>
+                <Field label="Parentesco *">
+                  <select className="form-input" value={guardianForm.relationship}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, relationship: e.target.value })}>
+                    <option value="">Selecionar...</option>
+                    {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </Field>
+                <Field label="Telefone">
+                  <input className="form-input" value={guardianForm.phone} placeholder="(00) 0000-0000" inputMode="tel" maxLength={16}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, phone: formatPhone(e.target.value) })} />
+                </Field>
+                <Field label="WhatsApp">
+                  <input className="form-input" value={guardianForm.whatsapp} placeholder="(00) 90000-0000" inputMode="tel" maxLength={16}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, whatsapp: formatPhone(e.target.value) })} />
+                </Field>
+                <div className="flex gap-2">
+                  <button onClick={saveGuardian} className="bg-foreground text-background px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                    <Save className="size-3" /> Salvar
+                  </button>
+                  <button onClick={() => { setShowNewGuardian(false); setEditingGuardianId(null); }} className="border border-border px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                    <X className="size-3" /> Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {guardians.length === 0 && !showNewGuardian ? (
               <p className="text-sm text-muted-foreground italic">Nenhum responsável cadastrado.</p>
             ) : (
               <div className="space-y-4">
                 {guardians.map(g => (
-                  <div key={g.id} className="border-l-2 border-foreground pl-3">
-                    <div className="font-bold">{g.full_name}</div>
-                    <div className="text-xs medical-label opacity-70 mb-2">{g.relationship}</div>
+                  <div key={g.id} className="border-l-2 border-foreground pl-3 relative pr-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold">{g.full_name}</div>
+                        <div className="text-xs medical-label opacity-70 mb-2">{g.relationship}</div>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => startEditGuardian(g)} className="text-muted-foreground hover:text-foreground p-1" title="Editar">
+                          <Pencil className="size-4" />
+                        </button>
+                        <button onClick={() => setGuardianToDelete(g.id)} className="text-muted-foreground hover:text-destructive p-1" title="Excluir">
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </div>
                     {g.phone && (
                       <a href={`tel:${g.phone}`} className="flex items-center gap-2 text-sm hover:underline">
                         <Phone className="size-3" /> {g.phone}
