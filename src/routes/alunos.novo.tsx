@@ -6,6 +6,10 @@ import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import {
+  GRADES, CLASS_LETTERS, RELATIONSHIPS,
+  composeClassName, phoneSchema, formatPhone,
+} from "@/lib/school-constants";
 
 export const Route = createFileRoute("/alunos/novo")({
   component: () => (
@@ -16,10 +20,10 @@ export const Route = createFileRoute("/alunos/novo")({
 });
 
 const guardianSchema = z.object({
-  full_name: z.string().trim().min(1, "Nome obrigatório").max(120),
+  full_name: z.string().trim().min(1, "Nome do responsável obrigatório").max(120),
   relationship: z.string().trim().min(1, "Parentesco obrigatório").max(50),
-  phone: z.string().trim().max(30).optional().or(z.literal("")),
-  whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
+  phone: phoneSchema.optional().or(z.literal("")),
+  whatsapp: phoneSchema.optional().or(z.literal("")),
 });
 
 const studentSchema = z.object({
@@ -35,10 +39,11 @@ interface GuardianForm { full_name: string; relationship: string; phone: string;
 function NewStudent() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [grade, setGrade] = useState("");
+  const [letter, setLetter] = useState("");
   const [form, setForm] = useState({
     full_name: "",
     birth_date: "",
-    class_name: "",
     shift: "matutino" as "matutino" | "vespertino" | "noturno" | "integral",
     notes: "",
   });
@@ -52,7 +57,8 @@ function NewStudent() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = studentSchema.safeParse(form);
+    const class_name = composeClassName(grade, letter);
+    const parsed = studentSchema.safeParse({ ...form, class_name });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -138,14 +144,32 @@ function NewStudent() {
                 className="form-input" required
               />
             </Field>
-            <Field label="Turma / Série" required>
-              <input
-                value={form.class_name}
-                onChange={(e) => setForm({ ...form, class_name: e.target.value })}
-                placeholder="Ex: 3º Ano B"
-                className="form-input" required maxLength={50}
-              />
+            <Field label="Ano" required>
+              <select
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                className="form-input" required
+              >
+                <option value="">Selecionar ano...</option>
+                {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
             </Field>
+            <Field label="Letra da Turma" required>
+              <select
+                value={letter}
+                onChange={(e) => setLetter(e.target.value)}
+                className="form-input" required
+              >
+                <option value="">Selecionar letra...</option>
+                {CLASS_LETTERS.map(l => <option key={l} value={l}>{l}</option>)}
+              </select>
+            </Field>
+            {grade && letter && (
+              <div className="md:col-span-2">
+                <div className="medical-label mb-1">Turma resultante</div>
+                <div className="font-bold text-base">{composeClassName(grade, letter)}</div>
+              </div>
+            )}
             <Field label="Turno" required>
               <select
                 value={form.shift}
@@ -187,27 +211,45 @@ function NewStudent() {
           <div className="space-y-4">
             {guardians.map((g, i) => (
               <div key={i} className="border border-border p-4 grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-                <div className="absolute -top-2.5 left-3 bg-card px-2 medical-label">Responsável {i + 1}</div>
+                <div className="absolute -top-3 left-3 bg-card px-2 medical-label">Responsável {i + 1}</div>
                 {guardians.length > 1 && (
                   <button
                     type="button"
                     onClick={() => setGuardians(gs => gs.filter((_, idx) => idx !== i))}
-                    className="absolute -top-2.5 right-3 bg-card px-1 text-muted-foreground hover:text-destructive"
+                    className="absolute -top-4 right-2 bg-card border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground rounded-full p-1.5 transition-colors"
+                    title="Remover responsável"
                   >
-                    <Trash2 className="size-3" />
+                    <Trash2 className="size-4" />
                   </button>
                 )}
                 <Field label="Nome">
                   <input value={g.full_name} onChange={(e) => updateGuardian(i, "full_name", e.target.value)} className="form-input" maxLength={120} />
                 </Field>
                 <Field label="Parentesco">
-                  <input value={g.relationship} onChange={(e) => updateGuardian(i, "relationship", e.target.value)} placeholder="Mãe, Pai, Tutor..." className="form-input" maxLength={50} />
+                  <select value={g.relationship} onChange={(e) => updateGuardian(i, "relationship", e.target.value)} className="form-input">
+                    <option value="">Selecionar...</option>
+                    {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
                 </Field>
                 <Field label="Telefone">
-                  <input value={g.phone} onChange={(e) => updateGuardian(i, "phone", e.target.value)} placeholder="(00) 0000-0000" className="form-input" maxLength={30} />
+                  <input
+                    value={g.phone}
+                    onChange={(e) => updateGuardian(i, "phone", formatPhone(e.target.value))}
+                    placeholder="(00) 0000-0000"
+                    className="form-input"
+                    maxLength={16}
+                    inputMode="tel"
+                  />
                 </Field>
                 <Field label="WhatsApp">
-                  <input value={g.whatsapp} onChange={(e) => updateGuardian(i, "whatsapp", e.target.value)} placeholder="(00) 90000-0000" className="form-input" maxLength={30} />
+                  <input
+                    value={g.whatsapp}
+                    onChange={(e) => updateGuardian(i, "whatsapp", formatPhone(e.target.value))}
+                    placeholder="(00) 90000-0000"
+                    className="form-input"
+                    maxLength={16}
+                    inputMode="tel"
+                  />
                 </Field>
               </div>
             ))}
