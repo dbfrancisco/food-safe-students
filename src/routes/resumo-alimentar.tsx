@@ -44,7 +44,11 @@ function ResumoAlimentar() {
         .select("id, full_name, class_name, shift, allergies(name)")
         .order("class_name");
       if (error) toast.error(error.message);
-      setStudents((data ?? []) as StudentRow[]);
+      const rows = (data ?? []) as StudentRow[];
+      // Dedup defensivo por id
+      const map = new Map<string, StudentRow>();
+      rows.forEach((r) => map.set(r.id, r));
+      setStudents(Array.from(map.values()));
       setLoading(false);
     })();
   }, []);
