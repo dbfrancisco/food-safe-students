@@ -166,7 +166,7 @@ function ResumoAlimentar() {
               </div>
               <div className="bg-card clinical-border p-5">
                 <div className="flex items-center gap-2 medical-label">
-                  <Utensils className="size-3" /> Com restrição
+                  <Utensils className="size-3" /> Alunos com restrição
                 </div>
                 <div className="text-3xl font-bold mt-2">{withRestriction.length}</div>
                 <div className="text-xs text-muted-foreground mt-1">
@@ -174,7 +174,7 @@ function ResumoAlimentar() {
                 </div>
               </div>
               <div className="bg-card clinical-border p-5">
-                <div className="medical-label">Tipos de restrição</div>
+                <div className="medical-label">Restrições diferentes</div>
                 <div className="text-3xl font-bold mt-2">{counts.length}</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   Categorias distintas identificadas
