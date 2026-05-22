@@ -9,6 +9,11 @@ import type { Severity } from "@/lib/severity";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2, Phone, MessageCircle, Save, Pencil, X } from "lucide-react";
 import {
+  GRADES, CLASS_LETTERS, RELATIONSHIPS,
+  composeClassName, decomposeClassName,
+  phoneSchema, formatPhone,
+} from "@/lib/school-constants";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -50,6 +55,15 @@ const allergySchema = z.object({
   emergency_action: z.string().trim().max(500).optional(),
 });
 
+const guardianSchema = z.object({
+  full_name: z.string().trim().min(1, "Nome obrigatório").max(120),
+  relationship: z.string().trim().min(1, "Parentesco obrigatório").max(50),
+  phone: phoneSchema.optional().or(z.literal("")),
+  whatsapp: phoneSchema.optional().or(z.literal("")),
+});
+
+interface GuardianForm { full_name: string; relationship: string; phone: string; whatsapp: string }
+
 function StudentDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
@@ -59,6 +73,8 @@ function StudentDetail() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Student>>({});
+  const [editGrade, setEditGrade] = useState("");
+  const [editLetter, setEditLetter] = useState("");
   const [showAllergyForm, setShowAllergyForm] = useState(false);
   const [newAllergy, setNewAllergy] = useState({
     name: "", custom: "", severity: "leve" as Severity,
@@ -70,6 +86,12 @@ function StudentDetail() {
   });
   const [allergyToDelete, setAllergyToDelete] = useState<string | null>(null);
   const [confirmStudentDelete, setConfirmStudentDelete] = useState(false);
+
+  // Responsáveis - estado de edição
+  const [editingGuardianId, setEditingGuardianId] = useState<string | null>(null);
+  const [guardianForm, setGuardianForm] = useState<GuardianForm>({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+  const [showNewGuardian, setShowNewGuardian] = useState(false);
+  const [guardianToDelete, setGuardianToDelete] = useState<string | null>(null);
 
   function startEditAllergy(a: Allergy) {
     setEditingAllergyId(a.id);
@@ -111,6 +133,9 @@ function StudentDetail() {
     if (s.data) {
       setStudent(s.data as Student);
       setEditForm(s.data as Student);
+      const dec = decomposeClassName((s.data as Student).class_name);
+      setEditGrade(dec.grade);
+      setEditLetter(dec.letter);
     }
     setGuardians((g.data ?? []) as Guardian[]);
     setAllergies((a.data ?? []) as Allergy[]);
@@ -119,14 +144,15 @@ function StudentDetail() {
   useEffect(() => { load(); }, [id]);
 
   async function saveEdit() {
-    if (!editForm.full_name || !editForm.class_name) {
+    const class_name = editGrade && editLetter ? composeClassName(editGrade, editLetter) : (editForm.class_name ?? "");
+    if (!editForm.full_name || !class_name) {
       toast.error("Nome e turma obrigatórios");
       return;
     }
     const { error } = await supabase.from("students").update({
       full_name: editForm.full_name,
       birth_date: editForm.birth_date,
-      class_name: editForm.class_name,
+      class_name,
       shift: editForm.shift,
       notes: editForm.notes,
     }).eq("id", id);
@@ -136,6 +162,50 @@ function StudentDetail() {
       setEditing(false);
       load();
     }
+  }
+
+  function startEditGuardian(g: Guardian) {
+    setEditingGuardianId(g.id);
+    setShowNewGuardian(false);
+    setGuardianForm({
+      full_name: g.full_name,
+      relationship: g.relationship,
+      phone: g.phone ?? "",
+      whatsapp: g.whatsapp ?? "",
+    });
+  }
+
+  async function saveGuardian() {
+    const parsed = guardianSchema.safeParse(guardianForm);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    const payload = {
+      full_name: parsed.data.full_name,
+      relationship: parsed.data.relationship,
+      phone: parsed.data.phone || null,
+      whatsapp: parsed.data.whatsapp || null,
+    };
+    if (editingGuardianId) {
+      const { error } = await supabase.from("guardians").update(payload).eq("id", editingGuardianId);
+      if (error) return toast.error(error.message);
+      toast.success("Responsável atualizado");
+    } else {
+      const { error } = await supabase.from("guardians").insert({ ...payload, student_id: id });
+      if (error) return toast.error(error.message);
+      toast.success("Responsável adicionado");
+    }
+    setEditingGuardianId(null);
+    setShowNewGuardian(false);
+    setGuardianForm({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+    load();
+  }
+
+  async function deleteGuardian(gid: string) {
+    const { error } = await supabase.from("guardians").delete().eq("id", gid);
+    if (error) toast.error(error.message);
+    else { toast.success("Responsável removido"); load(); }
   }
 
   async function addAllergy() {
@@ -239,9 +309,24 @@ function StudentDetail() {
                 <Field label="Nascimento">
                   <input type="date" className="form-input" value={editForm.birth_date ?? ""} onChange={(e) => setEditForm({ ...editForm, birth_date: e.target.value })} />
                 </Field>
-                <Field label="Turma">
-                  <input className="form-input" value={editForm.class_name ?? ""} onChange={(e) => setEditForm({ ...editForm, class_name: e.target.value })} />
+                <Field label="Ano">
+                  <select className="form-input" value={editGrade} onChange={(e) => setEditGrade(e.target.value)}>
+                    <option value="">Selecionar ano...</option>
+                    {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                 </Field>
+                <Field label="Letra da Turma">
+                  <select className="form-input" value={editLetter} onChange={(e) => setEditLetter(e.target.value)}>
+                    <option value="">Selecionar letra...</option>
+                    {CLASS_LETTERS.map(l => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </Field>
+                {editGrade && editLetter && (
+                  <div className="sm:col-span-2">
+                    <div className="medical-label mb-1">Turma resultante</div>
+                    <div className="font-bold">{composeClassName(editGrade, editLetter)}</div>
+                  </div>
+                )}
                 <Field label="Turno">
                   <select className="form-input" value={editForm.shift} onChange={(e) => setEditForm({ ...editForm, shift: e.target.value as Student["shift"] })}>
                     <option value="matutino">Matutino</option>
@@ -454,16 +539,76 @@ function StudentDetail() {
 
         <aside className="space-y-6">
           <section className="bg-card clinical-border p-6">
-            <div className="medical-label mb-1">Contatos</div>
-            <h2 className="font-bold text-lg mb-4">Responsáveis ({guardians.length})</h2>
-            {guardians.length === 0 ? (
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <div className="medical-label mb-1">Contatos</div>
+                <h2 className="font-bold text-lg">Responsáveis ({guardians.length})</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowNewGuardian(true);
+                  setEditingGuardianId(null);
+                  setGuardianForm({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+                }}
+                className="text-xs font-bold uppercase tracking-widest border border-foreground px-2 py-1 hover:bg-foreground hover:text-background flex items-center gap-1"
+              >
+                <Plus className="size-3" /> Novo
+              </button>
+            </div>
+
+            {(showNewGuardian || editingGuardianId) && (
+              <div className="border border-border p-4 mb-4 space-y-3 bg-muted/20">
+                <div className="medical-label">{editingGuardianId ? "Editar responsável" : "Novo responsável"}</div>
+                <Field label="Nome *">
+                  <input className="form-input" value={guardianForm.full_name} maxLength={120}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, full_name: e.target.value })} />
+                </Field>
+                <Field label="Parentesco *">
+                  <select className="form-input" value={guardianForm.relationship}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, relationship: e.target.value })}>
+                    <option value="">Selecionar...</option>
+                    {RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </Field>
+                <Field label="Telefone">
+                  <input className="form-input" value={guardianForm.phone} placeholder="(00) 0000-0000" inputMode="tel" maxLength={16}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, phone: formatPhone(e.target.value) })} />
+                </Field>
+                <Field label="WhatsApp">
+                  <input className="form-input" value={guardianForm.whatsapp} placeholder="(00) 90000-0000" inputMode="tel" maxLength={16}
+                    onChange={(e) => setGuardianForm({ ...guardianForm, whatsapp: formatPhone(e.target.value) })} />
+                </Field>
+                <div className="flex gap-2">
+                  <button onClick={saveGuardian} className="bg-foreground text-background px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                    <Save className="size-3" /> Salvar
+                  </button>
+                  <button onClick={() => { setShowNewGuardian(false); setEditingGuardianId(null); }} className="border border-border px-3 py-1.5 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
+                    <X className="size-3" /> Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {guardians.length === 0 && !showNewGuardian ? (
               <p className="text-sm text-muted-foreground italic">Nenhum responsável cadastrado.</p>
             ) : (
               <div className="space-y-4">
                 {guardians.map(g => (
-                  <div key={g.id} className="border-l-2 border-foreground pl-3">
-                    <div className="font-bold">{g.full_name}</div>
-                    <div className="text-xs medical-label opacity-70 mb-2">{g.relationship}</div>
+                  <div key={g.id} className="border-l-2 border-foreground pl-3 relative pr-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold">{g.full_name}</div>
+                        <div className="text-xs medical-label opacity-70 mb-2">{g.relationship}</div>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => startEditGuardian(g)} className="text-muted-foreground hover:text-foreground p-1" title="Editar">
+                          <Pencil className="size-4" />
+                        </button>
+                        <button onClick={() => setGuardianToDelete(g.id)} className="text-muted-foreground hover:text-destructive p-1" title="Excluir">
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    </div>
                     {g.phone && (
                       <a href={`tel:${g.phone}`} className="flex items-center gap-2 text-sm hover:underline">
                         <Phone className="size-3" /> {g.phone}
@@ -537,6 +682,29 @@ function StudentDetail() {
               }}
             >
               Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!guardianToDelete} onOpenChange={(o) => !o && setGuardianToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover responsável</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover este responsável? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (guardianToDelete) deleteGuardian(guardianToDelete);
+                setGuardianToDelete(null);
+              }}
+            >
+              Remover
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
