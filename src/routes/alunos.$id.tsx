@@ -309,9 +309,24 @@ function StudentDetail() {
                 <Field label="Nascimento">
                   <input type="date" className="form-input" value={editForm.birth_date ?? ""} onChange={(e) => setEditForm({ ...editForm, birth_date: e.target.value })} />
                 </Field>
-                <Field label="Turma">
-                  <input className="form-input" value={editForm.class_name ?? ""} onChange={(e) => setEditForm({ ...editForm, class_name: e.target.value })} />
+                <Field label="Ano">
+                  <select className="form-input" value={editGrade} onChange={(e) => setEditGrade(e.target.value)}>
+                    <option value="">Selecionar ano...</option>
+                    {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                 </Field>
+                <Field label="Letra da Turma">
+                  <select className="form-input" value={editLetter} onChange={(e) => setEditLetter(e.target.value)}>
+                    <option value="">Selecionar letra...</option>
+                    {CLASS_LETTERS.map(l => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                </Field>
+                {editGrade && editLetter && (
+                  <div className="sm:col-span-2">
+                    <div className="medical-label mb-1">Turma resultante</div>
+                    <div className="font-bold">{composeClassName(editGrade, editLetter)}</div>
+                  </div>
+                )}
                 <Field label="Turno">
                   <select className="form-input" value={editForm.shift} onChange={(e) => setEditForm({ ...editForm, shift: e.target.value as Student["shift"] })}>
                     <option value="matutino">Matutino</option>
