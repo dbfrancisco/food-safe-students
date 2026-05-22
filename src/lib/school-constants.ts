@@ -22,7 +22,7 @@ export function decomposeClassName(className: string): { grade: string; letter: 
   if (!className) return { grade: "", letter: "" };
   const match = className.match(/^(\d+º\s*Ano)\s*([A-Z])$/i);
   if (match) {
-    return { grade: match[1].replace(/\s+/, "º Ano").replace("º Anoº Ano", "º Ano"), letter: match[2].toUpperCase() };
+    return { grade: match[1].replace(/\s+/g, " "), letter: match[2].toUpperCase() };
   }
   // Fallback: try ending with single letter
   const last = className.trim().slice(-1).toUpperCase();
