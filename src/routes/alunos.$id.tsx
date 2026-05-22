@@ -55,6 +55,15 @@ const allergySchema = z.object({
   emergency_action: z.string().trim().max(500).optional(),
 });
 
+const guardianSchema = z.object({
+  full_name: z.string().trim().min(1, "Nome obrigatório").max(120),
+  relationship: z.string().trim().min(1, "Parentesco obrigatório").max(50),
+  phone: phoneSchema.optional().or(z.literal("")),
+  whatsapp: phoneSchema.optional().or(z.literal("")),
+});
+
+interface GuardianForm { full_name: string; relationship: string; phone: string; whatsapp: string }
+
 function StudentDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
@@ -64,6 +73,8 @@ function StudentDetail() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<Student>>({});
+  const [editGrade, setEditGrade] = useState("");
+  const [editLetter, setEditLetter] = useState("");
   const [showAllergyForm, setShowAllergyForm] = useState(false);
   const [newAllergy, setNewAllergy] = useState({
     name: "", custom: "", severity: "leve" as Severity,
@@ -75,6 +86,12 @@ function StudentDetail() {
   });
   const [allergyToDelete, setAllergyToDelete] = useState<string | null>(null);
   const [confirmStudentDelete, setConfirmStudentDelete] = useState(false);
+
+  // Responsáveis - estado de edição
+  const [editingGuardianId, setEditingGuardianId] = useState<string | null>(null);
+  const [guardianForm, setGuardianForm] = useState<GuardianForm>({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+  const [showNewGuardian, setShowNewGuardian] = useState(false);
+  const [guardianToDelete, setGuardianToDelete] = useState<string | null>(null);
 
   function startEditAllergy(a: Allergy) {
     setEditingAllergyId(a.id);
