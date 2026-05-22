@@ -133,6 +133,9 @@ function StudentDetail() {
     if (s.data) {
       setStudent(s.data as Student);
       setEditForm(s.data as Student);
+      const dec = decomposeClassName((s.data as Student).class_name);
+      setEditGrade(dec.grade);
+      setEditLetter(dec.letter);
     }
     setGuardians((g.data ?? []) as Guardian[]);
     setAllergies((a.data ?? []) as Allergy[]);
@@ -141,14 +144,15 @@ function StudentDetail() {
   useEffect(() => { load(); }, [id]);
 
   async function saveEdit() {
-    if (!editForm.full_name || !editForm.class_name) {
+    const class_name = editGrade && editLetter ? composeClassName(editGrade, editLetter) : (editForm.class_name ?? "");
+    if (!editForm.full_name || !class_name) {
       toast.error("Nome e turma obrigatórios");
       return;
     }
     const { error } = await supabase.from("students").update({
       full_name: editForm.full_name,
       birth_date: editForm.birth_date,
-      class_name: editForm.class_name,
+      class_name,
       shift: editForm.shift,
       notes: editForm.notes,
     }).eq("id", id);
@@ -158,6 +162,50 @@ function StudentDetail() {
       setEditing(false);
       load();
     }
+  }
+
+  function startEditGuardian(g: Guardian) {
+    setEditingGuardianId(g.id);
+    setShowNewGuardian(false);
+    setGuardianForm({
+      full_name: g.full_name,
+      relationship: g.relationship,
+      phone: g.phone ?? "",
+      whatsapp: g.whatsapp ?? "",
+    });
+  }
+
+  async function saveGuardian() {
+    const parsed = guardianSchema.safeParse(guardianForm);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    const payload = {
+      full_name: parsed.data.full_name,
+      relationship: parsed.data.relationship,
+      phone: parsed.data.phone || null,
+      whatsapp: parsed.data.whatsapp || null,
+    };
+    if (editingGuardianId) {
+      const { error } = await supabase.from("guardians").update(payload).eq("id", editingGuardianId);
+      if (error) return toast.error(error.message);
+      toast.success("Responsável atualizado");
+    } else {
+      const { error } = await supabase.from("guardians").insert({ ...payload, student_id: id });
+      if (error) return toast.error(error.message);
+      toast.success("Responsável adicionado");
+    }
+    setEditingGuardianId(null);
+    setShowNewGuardian(false);
+    setGuardianForm({ full_name: "", relationship: "", phone: "", whatsapp: "" });
+    load();
+  }
+
+  async function deleteGuardian(gid: string) {
+    const { error } = await supabase.from("guardians").delete().eq("id", gid);
+    if (error) toast.error(error.message);
+    else { toast.success("Responsável removido"); load(); }
   }
 
   async function addAllergy() {
