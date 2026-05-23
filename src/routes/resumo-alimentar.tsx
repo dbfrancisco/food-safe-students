@@ -124,7 +124,7 @@ function ResumoAlimentar() {
       <div className="space-y-6">
         <div className="bg-muted/40 p-4 clinical-border flex flex-wrap gap-4">
           <div className="w-48">
-            <label className="medical-label block mb-2">Turno</label>
+            <label className="field-label block mb-3">Turno</label>
             <select
               value={shift}
               onChange={(e) => setShift(e.target.value)}
@@ -138,7 +138,7 @@ function ResumoAlimentar() {
             </select>
           </div>
           <div className="w-60">
-            <label className="medical-label block mb-2">Turma</label>
+            <label className="field-label block mb-3">Turma</label>
             <select
               value={className}
               onChange={(e) => setClassName(e.target.value)}
