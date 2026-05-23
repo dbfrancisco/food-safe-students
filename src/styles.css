@@ -121,6 +121,19 @@
     color: var(--color-muted-foreground);
   }
 
+  .field-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid var(--color-foreground);
+  }
+
   .data-mono {
     font-family: var(--font-mono);
     font-feature-settings: "tnum";

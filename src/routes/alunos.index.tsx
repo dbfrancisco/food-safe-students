@@ -101,7 +101,7 @@ function StudentsList() {
       <div className="space-y-6">
         <div className="bg-muted/40 p-4 clinical-border flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[260px]">
-            <label className="medical-label block mb-2">Busca por Nome</label>
+            <label className="field-label block mb-3">Busca por Nome</label>
             <div className="relative">
               <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -113,7 +113,7 @@ function StudentsList() {
             </div>
           </div>
           <div className="w-48">
-            <label className="medical-label block mb-2">Turma</label>
+            <label className="field-label block mb-3">Turma</label>
             <select
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
@@ -124,7 +124,7 @@ function StudentsList() {
             </select>
           </div>
           <div className="w-48">
-            <label className="medical-label block mb-2">Turno</label>
+            <label className="field-label block mb-3">Turno</label>
             <select
               value={shiftFilter}
               onChange={(e) => setShiftFilter(e.target.value)}
@@ -163,11 +163,11 @@ function StudentsList() {
             <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[640px]">
               <thead className="bg-muted/30">
-                <tr className="border-b border-border">
-                  <th className="px-4 py-3 medical-label">Aluno</th>
-                  <th className="px-4 py-3 medical-label">Turma · Turno</th>
-                  <th className="px-4 py-3 medical-label">Restrições</th>
-                  <th className="px-4 py-3 medical-label">Risco Máximo</th>
+                <tr className="border-b-2 border-foreground">
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Aluno</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Turma · Turno</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Restrições</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Risco Máximo</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
