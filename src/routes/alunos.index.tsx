@@ -163,11 +163,11 @@ function StudentsList() {
             <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[640px]">
               <thead className="bg-muted/30">
-                <tr className="border-b border-border">
-                  <th className="px-4 py-3 medical-label">Aluno</th>
-                  <th className="px-4 py-3 medical-label">Turma · Turno</th>
-                  <th className="px-4 py-3 medical-label">Restrições</th>
-                  <th className="px-4 py-3 medical-label">Risco Máximo</th>
+                <tr className="border-b-2 border-foreground">
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Aluno</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Turma · Turno</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Restrições</th>
+                  <th className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-foreground">Risco Máximo</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
