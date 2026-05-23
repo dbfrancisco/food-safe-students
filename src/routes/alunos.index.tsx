@@ -101,7 +101,7 @@ function StudentsList() {
       <div className="space-y-6">
         <div className="bg-muted/40 p-4 clinical-border flex flex-wrap items-end gap-4">
           <div className="flex-1 min-w-[260px]">
-            <label className="medical-label block mb-2">Busca por Nome</label>
+            <label className="field-label block mb-3">Busca por Nome</label>
             <div className="relative">
               <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -113,7 +113,7 @@ function StudentsList() {
             </div>
           </div>
           <div className="w-48">
-            <label className="medical-label block mb-2">Turma</label>
+            <label className="field-label block mb-3">Turma</label>
             <select
               value={classFilter}
               onChange={(e) => setClassFilter(e.target.value)}
@@ -124,7 +124,7 @@ function StudentsList() {
             </select>
           </div>
           <div className="w-48">
-            <label className="medical-label block mb-2">Turno</label>
+            <label className="field-label block mb-3">Turno</label>
             <select
               value={shiftFilter}
               onChange={(e) => setShiftFilter(e.target.value)}
