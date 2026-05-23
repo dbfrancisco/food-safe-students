@@ -160,26 +160,26 @@ function ResumoAlimentar() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-card clinical-border p-5">
-                <div className="flex items-center gap-2 medical-label">
-                  <Users className="size-3" /> Alunos no filtro
+                <div className="field-label">
+                  <Users className="size-3.5" /> Alunos no filtro
                 </div>
-                <div className="text-3xl font-bold mt-2">{filtered.length}</div>
+                <div className="text-3xl font-bold mt-3">{filtered.length}</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   Turno: {shiftLabel} · Turma: {classLabel}
                 </div>
               </div>
               <div className="bg-card clinical-border p-5">
-                <div className="flex items-center gap-2 medical-label">
-                  <Utensils className="size-3" /> Alunos com restrição
+                <div className="field-label">
+                  <Utensils className="size-3.5" /> Alunos com restrição
                 </div>
-                <div className="text-3xl font-bold mt-2">{withRestriction.length}</div>
+                <div className="text-3xl font-bold mt-3">{withRestriction.length}</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   Requerem refeição específica
                 </div>
               </div>
               <div className="bg-card clinical-border p-5">
-                <div className="medical-label">Restrições diferentes</div>
-                <div className="text-3xl font-bold mt-2">{counts.length}</div>
+                <div className="field-label">Restrições diferentes</div>
+                <div className="text-3xl font-bold mt-3">{counts.length}</div>
                 <div className="text-xs text-muted-foreground mt-1">
                   Categorias distintas identificadas
                 </div>
@@ -187,7 +187,7 @@ function ResumoAlimentar() {
             </div>
 
             <div className="bg-card clinical-border p-6">
-              <div className="medical-label mb-1">Distribuição por Restrição</div>
+              <div className="field-label mb-3">Distribuição por Restrição</div>
               <h2 className="font-bold text-lg mb-4">Quantidade por tipo</h2>
               {counts.length === 0 ? (
                 <p className="text-sm text-muted-foreground italic py-6 text-center">
@@ -200,7 +200,7 @@ function ResumoAlimentar() {
                       key={name}
                       className="border border-border bg-muted/30 px-4 py-3 min-w-[140px]"
                     >
-                      <div className="medical-label">{name}</div>
+                      <div className="text-sm font-extrabold uppercase tracking-wider text-foreground">{name}</div>
                       <div className="text-2xl font-bold mt-1">{qty}</div>
                       <div className="text-[10px] text-muted-foreground">
                         {qty === 1 ? "aluno" : "alunos"}
