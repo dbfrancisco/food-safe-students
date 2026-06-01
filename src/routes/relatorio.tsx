@@ -11,7 +11,10 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
 
+import { requireAuth } from "@/lib/route-guard";
+
 export const Route = createFileRoute("/relatorio")({
+  beforeLoad: requireAuth,
   component: () => (
     <RequireAuth>
       <ReportPage />
