@@ -18,7 +18,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { requireAuth } from "@/lib/route-guard";
+
 export const Route = createFileRoute("/alunos/")({
+  beforeLoad: requireAuth,
   component: () => (
     <RequireAuth>
       <StudentsList />
