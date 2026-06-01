@@ -11,7 +11,10 @@ import {
   composeClassName, phoneSchema, formatPhone,
 } from "@/lib/school-constants";
 
+import { requireAuth } from "@/lib/route-guard";
+
 export const Route = createFileRoute("/alunos/novo")({
+  beforeLoad: requireAuth,
   component: () => (
     <RequireAuth>
       <NewStudent />
