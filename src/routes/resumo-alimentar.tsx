@@ -8,7 +8,10 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
 
+import { requireAuth } from "@/lib/route-guard";
+
 export const Route = createFileRoute("/resumo-alimentar")({
+  beforeLoad: requireAuth,
   component: () => (
     <RequireAuth>
       <ResumoAlimentar />
