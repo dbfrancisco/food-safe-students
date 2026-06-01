@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
+import { requireAuth } from "@/lib/route-guard";
 import { Users, AlertTriangle, ShieldAlert, Plus, FileText } from "lucide-react";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import type { Severity } from "@/lib/severity";
 
 export const Route = createFileRoute("/dashboard")({
+  beforeLoad: requireAuth,
   component: () => (
     <RequireAuth>
       <Dashboard />
